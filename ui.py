@@ -9,6 +9,10 @@ class GameUI:
         self.player.attack(self.enemy)
         self.update_combat_status()
 
+        if self.enemy.is_alive():
+            self.enemy.attack(self.player)
+            self.update_combat_status()
+
     def update_combat_status(self):
         if not self.enemy.is_alive():
             print(f'{self.enemy.name} is defeated!')
