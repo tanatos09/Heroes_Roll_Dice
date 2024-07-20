@@ -10,7 +10,7 @@ class Combat:
         while self.player.is_alive() and self.enemy.is_alive():
             #Player's turn
             self.player.attack(self.enemy)
-            if not self.enemy.is_alive:
+            if not self.enemy.is_alive():
                 print(f'{self.enemy.name} is defeated!')
                 break
 
