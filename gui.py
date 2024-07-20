@@ -100,4 +100,3 @@ class GameGUI:
         self.log_text.insert(tk.END, message + "\n")
         self.log_text.config(state='disabled')
         self.log_text.yview(tk.END)
-
