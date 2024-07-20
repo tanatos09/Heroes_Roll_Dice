@@ -19,7 +19,13 @@ class D6(Dice):
     def __init__(self):
         super().__init__(sides=6) #6 sides
 
+class D10(Dice):
+    def __init__(self):
+        super().__init__(sides=10) #10 sides
+
 if __name__ == '__main__':
     d6 = D6()
+    d10 = D10()
 
     print(f'Rolling a D6: {d6.roll()}')
+    print(f'Rolling a D10: {d10.roll()}')

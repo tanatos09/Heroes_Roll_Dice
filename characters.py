@@ -1,5 +1,5 @@
 import random
-from dice import Dice
+import dice
 
 class TestWarrior:
     def __init__(self, name, health, defense, level, attack_min, attack_max, stamina):
@@ -10,7 +10,9 @@ class TestWarrior:
         self.attack_min = attack_min #minimum attack of the character for attack range
         self.attack_max = attack_max #maximum attack of the character for attack range
         self.stamina = stamina #character stamina
-        self.dice = Dice() #instance of the dice
+        self.d6 = dice.D6() #instance of the D6 dice
+        self.d10 = dice.D10()  # instance of the D10 dice
+
 
     def attack(self, target):
         '''
@@ -20,7 +22,7 @@ class TestWarrior:
         :param target: target of attack
         :return:
         '''
-        damage = random.randint(self.attack_min, self.attack_max) + self.dice.roll() #calculate base damage
+        damage = random.randint(self.attack_min, self.attack_max) + self.d10.roll() #calculate base damage
 
         if random.random() < 0.2: #critical hit - 20% chance for test
             damage *= 3
