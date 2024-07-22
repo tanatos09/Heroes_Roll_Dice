@@ -1,48 +1,55 @@
 import dice
-from utils import log_action, roll_dice, is_critical
+from utils import roll_dice, is_critical
+from abc import ABC, abstractmethod
 
-class TestWarrior:
-    def __init__(self, name, health, defense, level, attack_min, attack_max, stamina):
-        self.name = name #character name
-        self.health = health #character health
-        self.defense = defense #character defense
-        self.level = level #character level
-        self.attack_min = attack_min #minimum attack of the character for attack range
-        self.attack_max = attack_max #maximum attack of the character for attack range
-        self.stamina = stamina #character stamina
-        self.d6 = dice.D6() #instance of the D6 dice
+
+class Character(ABC):
+    def __init__(self, name, health, defense, level, attack_min, attack_max, mana, magic_abilities):
+        self.name = name  #character name
+        self.health = health  #character health
+        self.defense = defense  #character defense
+        self.level = level  #character level
+        self.attack_min = attack_min  #minimum attack of the character for attack range
+        self.attack_max = attack_max  #maximum attack of the character for attack range
+        self.mana = mana  #character mana
+        self.d6 = dice.D6()  #instance of the D6 dice
         self.d10 = dice.D10()  # instance of the D10 dice
+        self.d12 = dice.D12()  # instance of the D12 dice
+        self.d20 = dice.D20()  # instance of the D20 dice
+        self.d100 = dice.D100()  # instance of the D100 dice
+        self.magic_dice = dice.MagicDice(magic_abilities)  # instance of the MagicDice dice
 
-
-    @log_action
+    @abstractmethod
     def attack(self, target, roll):
         '''
 
         perform an attack on a target
 
         :param target: target of attack
-        :return:
+        :param roll: dice roll result
+        :return: damage dealt to target
         '''
-        damage = roll_dice(self.attack_max) + roll #calculate base damage
+        damage = roll_dice(self.attack_max) + roll  #calculate base damage
 
-        if is_critical(): #critical hit - 20% chance for test
+        if is_critical():  #critical hit - 20% chance for test
             damage *= 3
             print('Critical hit!')
 
         target.defend(damage)
         return damage
 
+    @abstractmethod
     def defend(self, damage):
         '''
 
         reduce health point by the amount of damage
         :param damage: the amount of damage
-        :return:
         '''
         self.health -= damage
         if self.health < 0:
             self.health = 0
 
+    @abstractmethod
     def is_alive(self):
         '''
 
@@ -53,15 +60,96 @@ class TestWarrior:
 
         return self.health > 0
 
+class TestWarrior(Character):
+    def __init__(self, name, health, defense, level, attack_min, attack_max, mana):
+        '''
+
+        :param name: character name
+        :param health: character health
+        :param defense: character defense
+        :param level: character level
+        :param attack_min: character minimum attack
+        :param attack_max: character maximimum attack
+        :param mana: character mana
+        '''
+        magic_abilities = ['Shield', 'Instant kill', 'None', 'None', 'None', 'None', 'None', 'None']
+        super().__init__(name, health, defense, level, attack_min, attack_max, mana, magic_abilities)
+
+    def attack(self, target, roll):
+        '''
+
+        attack on target
+
+        :param target: target of the attack
+        :param roll: dice roll result
+        :return: dealted damage of target
+        '''
+        return super().attack(target,roll)
+
+    def defend(self, damage):
+        '''
+        reduction of health by damage
+        :param damage: amount of damage
+        :return:none
+        '''
+        super().defend(damage)
+
+    def is_alive(self):
+        '''
+        chceck if warrior is still alive
+        :return: True - warrior's health is > 0
+        '''
+        super().is_alive()
+
+class TestMage(Character):
+    def __init__(self, name, health, defense, level, attack_min, attack_max, mana):
+        magic_abilities = ['Magic Shield', 'Heal', 'Ice Blast', 'Fireball', 'Lighting storm', 'None', 'None', 'None']
+        super().__init__(name, health, defense, level, attack_min, attack_max, mana, magic_abilities)
+
+    def attack(self, target, roll):
+        '''
+
+        attack on target
+
+        :param target: target of the attack
+        :param roll: dice roll result
+        :return: dealted damage of target
+        '''
+        return super().attack(target,roll)
+
+    def defend(self, damage):
+        '''
+        reduction of health by damage
+        :param damage: amount of damage
+        :return:none
+        '''
+        super().defend(damage)
+
+    def is_alive(self):
+        '''
+        chceck if mage is still alive
+
+        :return: True - warrior's health is > 0
+        '''
+        super().is_alive()
+
 
 if __name__ == '__main__':
-    test_warrior = TestWarrior('Warrior', 100, 0, 0, 1, 10, 0)
+    warrior = TestWarrior('Warrior', 100, 5, 1, 5, 10, 20)
+    mage = TestMage('Mage', 100, 3, 1, 3, 7, 75)
+    target = TestWarrior('TestTarget', 100, 5, 1, 5, 10, 20)
 
-    target = TestWarrior('Target', 100, 0, 0, 1, 10, 0)
-
-    test_warrior.attack(target)
+    warrior.attack(target, warrior.d6.roll())
     print(f"{target.name}'s health: {target.health}")
 
-    target.attack(test_warrior)
-    print(f"{test_warrior.name}'s health: {test_warrior.health}")
+    target.attack(warrior, target.d6.roll())
+    print(f"{warrior.name}'s health: {warrior.health}")
 
+    mage.attack(target, mage.d10.roll())
+    print(f"{target.name}'s health after attack: {target.health}")
+
+    magic_result = warrior.magic_dice.roll()
+    print('warrior roll magic', warrior.magic_dice.result_text(magic_result))
+
+    magic_result = mage.magic_dice.roll()
+    print('mage magic', mage.magic_dice.result_text(magic_result))
