@@ -31,10 +31,10 @@ class D100(Dice):
         super().__init__(sides=100) #100 sides
 
 class MagicDice(Dice):
-    def __init__(self, attacks):
+    def __init__(self, spells):
         '''
 
         :param attacks: list of magics
         '''
-        self.attacks = attacks
+        self.spells = spells
 
