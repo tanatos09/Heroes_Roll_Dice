@@ -1,44 +1,62 @@
 import characters
 import dice
+from combat import Combat
+from gui import BattleGUI
 
-class GameUI:
-    def __init__(self, player, enemy):
-        self.player = player
-        self.enemy = enemy
-        self.d6 = dice.D6()
 
-    def attack(self, roll):
-        if roll < 3:  # Assume roll of 1 or 2 means the attack misses
-            self.log_message(f"{self.player.name} misses the attack!")
+class BattleUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Battle Simulator")
+
+        self.player = characters.TestWarrior('Hero', 100, 0, 0, 1, 1, 0)
+        self.enemy = characters.TestWarrior('Goblin', 100, 0, 0, 1, 1, 0)
+
+        self.dice_options = {'D6': dice.D6, 'D10': dice.D10, 'D12': dice.D12, 'D20': dice.D20, 'D100': dice.D100}
+        self.player.attack_dice = self.dice_options['D10']()
+        self.enemy.attack_dice = self.dice_options['D6']()
+
+        self.combat = Combat(self.player, self.enemy)
+        self.gui = BattleGUI(self.root, self.dice_options, self.player_attack)
+
+        self.update_labels()
+
+    def player_attack(self):
+        chosen_dice = self.gui.dice_choice.get()
+        self.player.attack_dice = self.dice_options[chosen_dice]()
+
+        self.gui.log_message("Player's turn:\n")
+
+        damage = self.combat.attack(self.player, self.enemy)
+        self.update_labels()
+        self.log_attack(self.player, self.enemy, damage)
+
+        if not self.enemy.is_alive():
+            self.gui.log_message(f'{self.enemy.name} is defeated!\n')
+            self.gui.disable_attack_button()
             return
 
-        self.log_message("Player attacks!")
-        player_damage = self.player.attack(self.enemy, roll)
-        self.update_combat_status()
+        self.gui.log_message("Enemy's turn:\n")
 
-        if self.enemy.is_alive():
-            enemy_roll = self.d6.roll()  # Roll for enemy attack
-            enemy_damage = self.enemy.attack(self.player, enemy_roll)
-            self.update_combat_status()
+        damage = self.combat.attack(self.enemy, self.player)
+        self.update_labels()
+        self.log_attack(self.enemy, self.player, damage)
 
-    def update_combat_status(self):
-        if not self.enemy.is_alive():
-            print(f'{self.enemy.name} is defeated!')
         if not self.player.is_alive():
-            print(f'{self.player.name} is defeated!')
+            self.gui.log_message(f'{self.player.name} is defeated!\n')
+            self.gui.disable_attack_button()
 
-    def get_stats(self):
-        return {'player_health': self.player.health,
-                'enemy_health': self.enemy.health
-                }
+    def update_labels(self):
+        self.gui.update_labels(f'Player: {self.player.name} HP: {self.player.health}',
+                               f'Enemy: {self.enemy.name} HP: {self.enemy.health}')
 
-    def log_message(self, message):
-        print(message)
+    def log_attack(self, attacker, target, damage):
+        self.gui.log_message(f'{attacker.name} attacks {target.name} for {damage} damage\n')
 
 
 if __name__ == '__main__':
-    player = characters.TestWarrior('Hero', 100, 0, 0, 1, 1, 0)
-    enemy = characters.TestWarrior('Goblin', 100, 0, 0, 1, 1, 0)
-    ui = GameUI(player, enemy)
-    ui.attack(4)
-    print(ui.get_stats())
+    import tkinter as tk
+
+    root = tk.Tk()
+    app = BattleUI(root)
+    root.mainloop()
