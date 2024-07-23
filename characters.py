@@ -3,7 +3,7 @@ from utils import roll_dice, is_critical
 
 
 class Character():
-    def __init__(self, name, health, defense, level, attack_min, attack_max, mana, magic_abilities):
+    def __init__(self, name, health, defense, level, attack_min, attack_max, mana, spells):
         self.name = name  #character name
         self.health = health  #character health
         self.defense = defense  #character defense
@@ -16,7 +16,7 @@ class Character():
         self.d12 = dice.D12()  # instance of the D12 dice
         self.d20 = dice.D20()  # instance of the D20 dice
         self.d100 = dice.D100()  # instance of the D100 dice
-        self.magic_dice = dice.MagicDice(magic_abilities)  # instance of the MagicDice dice
+        self.magic_dice = dice.MagicDice(spells)  # instance of the MagicDice dice
 
 
     def attack(self, target, roll):
@@ -71,15 +71,15 @@ class TestWarrior(Character):
         :param attack_max: character maximimum attack
         :param mana: character mana
         '''
-        magic_abilities = ['Shield', 'Instant kill', 'None', 'None', 'None', 'None', 'None', 'None']
-        super().__init__(name, health, defense, level, attack_min, attack_max, mana, magic_abilities)
+        spells = ['Shield', 'Instant kill', 'None', 'None', 'None', 'None', 'None', 'None']
+        super().__init__(name, health, defense, level, attack_min, attack_max, mana, spells)
 
 
 
 class TestMage(Character):
     def __init__(self, name, health, defense, level, attack_min, attack_max, mana):
-        magic_abilities = ['Magic Shield', 'Heal', 'Ice Blast', 'Fireball', 'Lighting storm', 'None', 'None', 'None']
-        super().__init__(name, health, defense, level, attack_min, attack_max, mana, magic_abilities)
+        spells = ['Magic Shield', 'Heal', 'Ice Blast', 'Fireball', 'Lighting storm', 'None', 'None', 'None']
+        super().__init__(name, health, defense, level, attack_min, attack_max, mana, spells)
 
 
 
