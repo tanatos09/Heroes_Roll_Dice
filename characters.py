@@ -1,9 +1,8 @@
 import dice
 from utils import roll_dice, is_critical
-from abc import ABC, abstractmethod
 
 
-class Character(ABC):
+class Character():
     def __init__(self, name, health, defense, level, attack_min, attack_max, mana, magic_abilities):
         self.name = name  #character name
         self.health = health  #character health
@@ -19,7 +18,7 @@ class Character(ABC):
         self.d100 = dice.D100()  # instance of the D100 dice
         self.magic_dice = dice.MagicDice(magic_abilities)  # instance of the MagicDice dice
 
-    @abstractmethod
+
     def attack(self, target, roll):
         '''
 
@@ -38,7 +37,7 @@ class Character(ABC):
         target.defend(damage)
         return damage
 
-    @abstractmethod
+
     def defend(self, damage):
         '''
 
@@ -49,7 +48,7 @@ class Character(ABC):
         if self.health < 0:
             self.health = 0
 
-    @abstractmethod
+
     def is_alive(self):
         '''
 
@@ -75,63 +74,14 @@ class TestWarrior(Character):
         magic_abilities = ['Shield', 'Instant kill', 'None', 'None', 'None', 'None', 'None', 'None']
         super().__init__(name, health, defense, level, attack_min, attack_max, mana, magic_abilities)
 
-    def attack(self, target, roll):
-        '''
 
-        attack on target
-
-        :param target: target of the attack
-        :param roll: dice roll result
-        :return: dealted damage of target
-        '''
-        return super().attack(target,roll)
-
-    def defend(self, damage):
-        '''
-        reduction of health by damage
-        :param damage: amount of damage
-        :return:none
-        '''
-        super().defend(damage)
-
-    def is_alive(self):
-        '''
-        chceck if warrior is still alive
-        :return: True - warrior's health is > 0
-        '''
-        super().is_alive()
 
 class TestMage(Character):
     def __init__(self, name, health, defense, level, attack_min, attack_max, mana):
         magic_abilities = ['Magic Shield', 'Heal', 'Ice Blast', 'Fireball', 'Lighting storm', 'None', 'None', 'None']
         super().__init__(name, health, defense, level, attack_min, attack_max, mana, magic_abilities)
 
-    def attack(self, target, roll):
-        '''
 
-        attack on target
-
-        :param target: target of the attack
-        :param roll: dice roll result
-        :return: dealted damage of target
-        '''
-        return super().attack(target,roll)
-
-    def defend(self, damage):
-        '''
-        reduction of health by damage
-        :param damage: amount of damage
-        :return:none
-        '''
-        super().defend(damage)
-
-    def is_alive(self):
-        '''
-        chceck if mage is still alive
-
-        :return: True - warrior's health is > 0
-        '''
-        super().is_alive()
 
 
 if __name__ == '__main__':
